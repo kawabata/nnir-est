@@ -52,7 +52,7 @@ attributes in addition to query word.
 - @size>, @size< :: mail size
 - @title= :: mail subject
 
-You can also specify 'AND', 'NOT', 'ANDNOT' for content query keyword.
+You can also specify 'AND', 'NOT', 'ANDNOT' and 'OR' for content query word.
 Queries are case-insensitive.
 
 For example, the following query will search for the mails whose subject
