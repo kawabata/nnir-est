@@ -23,12 +23,13 @@
 ;;
 ;; You can create the index by the following command.
 ;;
-;; : % mkdir ~/News/casket (if necessary)
-;; : % estcmd gather -cl -fm -cm ~/News/casket ~/Mail (for nnml/nnmh)
+;; : % mkdir ~/News/casket                              # if necessary
+;; : % estcmd gather -cl -fm -cm ~/News/casket ~/Mail   # for nnml/nnmh
 ;;
 ;; You may choose any directory for index.
-;; : % mkdir ~/.index
-;; : % estcmd gather -cl -fm -cm ~/.index ~/Maildir (for nnmaildir)
+;;
+;; : % mkdir ~/.index                                   # if necessary
+;; : % estcmd gather -cl -fm -cm ~/.index ~/Maildir     # for nnmaildir
 ;;
 ;; Target directory can be specified by `nnir-est-prefix'.
 ;; Index directory can be specified by `nnir-est-index-directory'.
@@ -94,14 +95,7 @@
   :group 'nnir-est)
 
 (defcustom nnir-est-additional-switches '()
-  "*A list of strings, to be given as additional arguments to HyperEstraier.
-The switches `-q', `-a', and `-s' are always used, very few other switches
-make any sense in this context.
-
-Note that this should be a list.  Ie, do NOT use the following:
-    (setq nnir-est-additional-switches \"-i -w\") ; wrong
-Instead, use this:
-    (setq nnir-est-additional-switches '(\"-i\" \"-w\"))"
+  "*A list of strings, to be given as additional arguments to HyperEstraier."
   :type '(repeat (string))
   :group 'nnir-est)
 
@@ -207,7 +201,7 @@ Tested with HyperEstraier 1.4.13 on a GNU/Linux system."
                 (apply 'call-process cp-list))))
         (unless (or (null exitstatus)
                     (zerop exitstatus))
-          (nnheader-report 'nnir "Couldn't run hyperest: %s" exitstatus)
+          (nnheader-report 'nnir "Couldn't run HyperEstraier: %s" exitstatus)
           ;; HyperEstraier failure reason is in this buffer, show it if
           ;; the user wants it.
           (when (> gnus-verbose 6)

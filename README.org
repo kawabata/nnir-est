@@ -8,14 +8,16 @@ You can use this search engine with various Gnus methods.
 
 You can create the index by the following command.
 
-: % mkdir ~/News/casket
-: % estcmd gather -cl -fm -cm ~/News/casket ~/Mail    (for nnml/nnmh)
+: % mkdir ~/News/casket                              # if necessary
+: % estcmd gather -cl -fm -cm ~/News/casket ~/Mail   # for nnml/nnmh
 
 You may choose any directory for index.
-: % mkdir ~/.index
-: % estcmd gather -cl -fm -cm ~/.index ~/Maildir (for nnmaildir)
+
+: % mkdir ~/.index                                   # if necessary
+: % estcmd gather -cl -fm -cm ~/.index ~/Maildir     # for nnmaildir
 
 Target directory can be specified by `nnir-est-prefix'.
+Index directory can be specified by `nnir-est-index-directory'.
 
 ** Emacs Setup
 
