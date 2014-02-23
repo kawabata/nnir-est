@@ -13,11 +13,11 @@
 ;;
 ;; -*- mode: org -*-
 ;;
-;; * HyperEstraier Interface for Gnus nnir method.
+;; * HyperEstraier Interface for Gnus nnir Method.
 ;;
 ;; This file provides a Gnus nnir interface for [[http://fallabs.com/hyperestraier/index.html][HyperEstraier]].
 ;; HyperEstraier is powerful, fast, multi-lingual, mail-friendly search engine.
-;; You can use this search engine with nnmh, nnml, and nnmaildir.
+;; You can use this search engine with `nnmh', `nnml', and `nnmaildir'.
 ;;
 ;; ** Indexing
 ;;
@@ -26,36 +26,46 @@
 ;; : % mkdir ~/News/casket                              # if necessary
 ;; : % estcmd gather -cl -fm -cm ~/News/casket ~/Mail   # for nnml/nnmh
 ;;
-;; You may choose any directory for index.
+;; You may choose any directory for index or target.
 ;;
 ;; : % mkdir ~/.index                                   # if necessary
 ;; : % estcmd gather -cl -fm -cm ~/.index ~/Maildir     # for nnmaildir
 ;;
-;; Target directory can be specified by `nnir-est-prefix'.
+;; Target directory can be specified by `nnir-est-prefix' or directory
+;; property of `nnmaildir'.
 ;; Index directory can be specified by `nnir-est-index-directory'.
 ;;
 ;; ** Emacs Setup
 ;;
 ;; In .emacs, you should set as the following. (`gnus-select-method' is
-;; used in the following example, but you can specify it in
+;; used in the following examples, but you can specify it in
 ;; `gnus-secondary-select-methods`, too.)
+;;
+;; First of all, you should choose which method to use HyperEstraier.
+;;
+;; : (require 'nnir-est)
+;; : (setq nnir-method-default-engines
+;; :        '((nnmaildir . est)
+;; :          (nnml . est)
+;; :          (nntp . gmane)))
+;;
+;; If you are using `nnml', specifying mail directory may be sufficient.
 ;;
 ;; : ;; nnml/nnmh
 ;; : (setq gnus-select-method '(nnml ""))
 ;; : (setq nnir-est-prefix "/home/john/Mail/")
 ;;
-;; or
+;; Or you can specify it as attribute.
 ;;
 ;; : (setq gnus-select-method '(nnml "" (nnir-est-prefix "/home/john/Mail/")))
 ;;
-;; or
+;; If `directory' attribute is specified, it will be used for prefix.
+;; Otherwise, `nnir-est-prefix' will be used.
 ;;
 ;; : ;; nnmaildir
 ;; : (setq gnus-select-method '(nnmaildir "" (directory "~/Maildir"))
 ;; :                            (nnir-est-index-directory "~/.index"))
 ;;
-;; If `directory' attribute is specified, it will be used for prefix.
-;; Otherwise, `nnir-est-prefix' will be used.
 ;;
 ;; * Query Format
 ;;
@@ -67,7 +77,7 @@
 ;; - @size>, @size< :: mail size
 ;; - @title= :: mail subject
 ;;
-;; You can also specify 'AND', 'NOT', 'ANDNOT' for content query word.
+;; You can also specify 'AND', 'NOT', 'ANDNOT' or 'OR' for content query word.
 ;; Queries are case-insensitive.
 ;;
 ;; For example, the following query will search for the mails whose subject
@@ -75,7 +85,7 @@
 ;;
 ;; : @title=foobar foo ANDNOT bar
 ;;
-;; The following query will search for the mail whose date is between
+;; The following query will search for the mails whose date is between
 ;; 2013/01/01 and 2013/01/03.
 ;;
 ;; : @cdate>2013/01/01 @cdate<2013/01/03
@@ -83,6 +93,10 @@
 ;;; Code:
 
 (require 'nnir)
+
+(defgroup nnir-est nil
+  "nnir interface for HyperEstraier."
+  :group 'nnir)
 
 (defcustom nnir-est-program "estcmd"
   "*Name of HyperEstraier search executable."
@@ -133,8 +147,8 @@ e.g.  '@title=foo @cdate>2011/01/01 foo AND bar'
         attr-list query-list)
     (dolist (segment query-split)
       (if (string-match nnir-est-field-keywords-regexp segment)
-          (let ((attr (substring (match-string-no-properties 1 segment) 0 -1))
-                (oper (substring (match-string-no-properties 1 segment) -1))
+          (let ((attr (substring (match-string 1 segment) 0 -1))
+                (oper (substring (match-string 1 segment) -1))
                 (subj (substring segment (match-end 1))))
             (setq attr-list
                   (nconc
@@ -171,7 +185,7 @@ Tested with HyperEstraier 1.4.13 on a GNU/Linux system."
            score group article
            (process-environment (copy-sequence process-environment))
            (qlist (nnir-est-query-to-attrs qstring))
-           (qword (car qlist))
+           (qwords (car qlist))
            (qattrs (cdr qlist))
            )
       (setenv "LC_MESSAGES" "C")
@@ -192,7 +206,7 @@ Tested with HyperEstraier 1.4.13 on a GNU/Linux system."
                  ,(expand-file-name
                    (nnir-read-server-parm 'nnir-est-index-directory server))
                                         ; index directory
-                 ,qword
+                 ,qwords                ; query words
                  ))
              (exitstatus
               (progn
