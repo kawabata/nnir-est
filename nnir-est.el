@@ -4,7 +4,7 @@
 ;; Description: nnir interface for HyperEstraier
 ;; Author: KAWABATA, Taichi <kawabata.taichi_at_gmail.com>
 ;; Created: 2014-02-01
-;; Version: 1.140223
+;; Version: 1.140301
 ;; Keywords: mail
 ;; Human-Keywords: gnus nnir
 ;; URL: https://github.com/kawabata/nnir-est
@@ -25,6 +25,10 @@
 ;;
 ;; : % mkdir ~/News/casket                              # if necessary
 ;; : % estcmd gather -cl -fm -cm ~/News/casket ~/Mail   # for nnml/nnmh
+;;
+;; Sometimes, it is recommended to optimize the index.
+;;
+;; : % estcmd optimize ~/News/casket
 ;;
 ;; You may choose any directory for index or target.
 ;;
@@ -108,8 +112,10 @@
   :type '(directory)
   :group 'nnir-est)
 
-(defcustom nnir-est-additional-switches '()
-  "*A list of strings, to be given as additional arguments to HyperEstraier."
+(defcustom nnir-est-additional-switches '("-ord" "@cdate NUMD")
+  "*A list of strings, to be given as additional arguments to HyperEstraier.
+Default value is to sort by date.  If you want to sort by score, try setting
+the value to (\"-ord\" \"@weight NUMD\")."
   :type '(repeat (string))
   :group 'nnir-est)
 
@@ -182,7 +188,7 @@ Tested with HyperEstraier 1.4.13 on a GNU/Linux system."
            (prefix
             (if directory (file-name-as-directory (expand-file-name directory))
               (nnir-read-server-parm 'nnir-est-prefix server)))
-           score group article
+           (score 1) group article
            (process-environment (copy-sequence process-environment))
            (qlist (nnir-est-query-to-attrs qstring))
            (qwords (car qlist))
@@ -201,8 +207,8 @@ Tested with HyperEstraier 1.4.13 on a GNU/Linux system."
                  "-max"                 ; maximum output
                  ,(number-to-string
                    (nnir-read-server-parm 'nnir-est-max server))
-                 ,@qattrs               ; query attributes
                  ,@(nnir-read-server-parm 'nnir-est-additional-switches server)
+                 ,@qattrs               ; query attributes
                  ,(expand-file-name
                    (nnir-read-server-parm 'nnir-est-index-directory server))
                                         ; index directory
@@ -222,7 +228,7 @@ Tested with HyperEstraier 1.4.13 on a GNU/Linux system."
             (display-buffer nnir-tmp-buffer))))
 
       ;; HyperEstraier output looks something like this:
-      ;; % estcmd search -vu -max -1 ~/News/casket/ foobar
+      ;; % estcmd search -vu -max -1 -ord '@cdate NUMA' ~/News/casket/ foobar
       ;; --------[02D18ACF0353065C]--------
       ;; VERSION	1.0
       ;; NODE	local
@@ -244,7 +250,7 @@ Tested with HyperEstraier 1.4.13 on a GNU/Linux system."
       ;; (message "buffer=%s" (buffer-string))
       (while (re-search-forward
               "^\\([0-9]+\\)	+file://\\([^ ]+?\\)$" nil t)
-        (setq score (match-string 1))
+        (setq score (1+ score))
         (let ((filename (url-unhex-string (match-string 2))))
           (setq group (file-name-directory filename)
                 article (file-name-nondirectory filename)))
@@ -253,7 +259,8 @@ Tested with HyperEstraier 1.4.13 on a GNU/Linux system."
         ;; make sure article and group is sane
         (when (and (string-match article-pattern article)
                    (not (null group)))
-	  (nnir-add-result group article score prefix server artlist)))
+	  (nnir-add-result group article (number-to-string score)
+                           prefix server artlist)))
       ;; debug
       (message "prefix=%s,server=%s,artlist=%s" prefix server artlist)
       ;; sort artlist by score

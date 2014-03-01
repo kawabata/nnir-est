@@ -11,6 +11,10 @@ You can create the index by the following command.
 : % mkdir ~/News/casket                              # if necessary
 : % estcmd gather -cl -fm -cm ~/News/casket ~/Mail   # for nnml/nnmh
 
+Sometimes, it is recommended to optimize the index.
+
+: % estcmd optimize ~/News/casket
+
 You may choose any directory for index or target.
 
 : % mkdir ~/.index                                   # if necessary
