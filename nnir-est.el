@@ -1,7 +1,7 @@
-;;; nnir-est.el --- nnir interface for HyperEstraier  -*- lexical-binding: t; -*-
+;;; nnir-est.el --- Gnus nnir interface for HyperEstraier  -*- lexical-binding: t; -*-
 
 ;; Filename: nnir-est.el
-;; Description: nnir interface for HyperEstraier
+;; Description: Gnus nnir interface for HyperEstraier
 ;; Author: KAWABATA, Taichi <kawabata.taichi_at_gmail.com>
 ;; Created: 2014-02-01
 ;; Version: 1.140301
