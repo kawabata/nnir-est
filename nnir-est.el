@@ -4,10 +4,23 @@
 ;; Description: Gnus nnir interface for HyperEstraier
 ;; Author: KAWABATA, Taichi <kawabata.taichi_at_gmail.com>
 ;; Created: 2014-02-01
-;; Version: 1.140301
+;; Version: 1.170817
 ;; Keywords: mail
 ;; Human-Keywords: gnus nnir
 ;; URL: https://github.com/kawabata/nnir-est
+
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
 ;;
@@ -97,6 +110,8 @@
 ;;; Code:
 
 (require 'nnir)
+(eval-when-compile
+  (require 'cl))
 
 (defgroup nnir-est nil
   "nnir interface for HyperEstraier."
@@ -176,7 +191,7 @@ e.g.  '@title=foo @cdate>2011/01/01 foo AND bar'
 Returns a vector of (_GROUP name, file name)
 pairs (also vectors, actually).
 
-Tested with HyperEstraier 1.4.13 on a GNU/Linux system."
+Tested with HyperEstraier 1.4.13 on a GNU/Linux and MacOS X 10.9 systems."
   (save-excursion
     (let* ((article-pattern (if (string-match "\\`nnmaildir:"
                                               (gnus-group-server server))
