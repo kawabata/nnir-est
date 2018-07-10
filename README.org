@@ -55,6 +55,15 @@ Otherwise, `nnir-est-prefix' will be used.
 : (setq gnus-select-method '(nnmaildir "" (directory "~/Maildir"))
 :                            (nnir-est-index-directory "~/.index"))
 
+* For Windows Users
+
+Make sure that process encoding is UTF-8.  e.g.
+
+: (cl-pushnew '("estcmd" utf-8 . utf-8) process-coding-system-alist)
+
+Also, directory separator of `nnir-est-prefix' must be "/", e.g.
+
+: (setq nnir-est-prefix "c:/Users/john/Mail")
 
 * Query Format
 
